@@ -60,6 +60,7 @@ const LOCAL_SETTINGS = {
     tabInsertsTab: { key: 'tabInsertsTab', type: 'boolean', default: false },
     sidebarPanelCollapsed: { key: 'sidebarPanelCollapsed', type: 'boolean', default: false },
     autoFillNoteTitle: { key: 'autoFillNoteTitle', type: 'boolean', default: false },
+    autoTitleFormat: { key: 'autoTitleFormat', type: 'string', default: '%Y%m%d%H%M%S' },
     // Landmark-anchored editor/preview scroll sync. Off by default: percentage sync
     // is cheaper and adequate for plain prose, while anchoring earns its cost on
     // notes with images, tables or code blocks.
@@ -457,6 +458,7 @@ function noteApp() {
         newTemplateNoteName: '',
         newButtonAction: 'chooser',
         autoFillNoteTitle: false,
+        autoTitleFormat: '%Y%m%d%H%M%S',
         smartScrollSync: false,
         lastUsedTemplate: '',
         
@@ -5129,11 +5131,22 @@ function noteApp() {
         },
         
         // Zettelkasten-style yyyymmddHHMMSS in local time.
-        _autoTitleTimestamp() {
+        _autoTitleTimestamp(format = this.autoTitleFormat || '%Y%m%d%H%M%S') {
             const d = new Date();
-            const pad = (n) => String(n).padStart(2, '0');
-            return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}` +
-                   `${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+            const pad2 = (n) => String(n).padStart(2, '0');
+            const pad4 = (n) => String(n).padStart(4, '0');
+
+            const replacements = {
+                '%Y': pad4(d.getFullYear()),
+                '%y': String(d.getFullYear()).slice(-2).padStart(2, '0'),
+                '%m': pad2(d.getMonth() + 1),
+                '%d': pad2(d.getDate()),
+                '%H': pad2(d.getHours()),
+                '%M': pad2(d.getMinutes()),
+                '%S': pad2(d.getSeconds()),
+            };
+
+            return format.replace(/%[YymdHMS]/g, (token) => replacements[token] ?? token);
         },
         
         closeCreateNameModal() {
