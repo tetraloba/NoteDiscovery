@@ -49,6 +49,39 @@ const SLUG_TRANSLITERATIONS = {
 };
 const SLUG_TRANSLITERATION_RE = new RegExp(`[${Object.keys(SLUG_TRANSLITERATIONS).join('')}]`, 'gi');
 
+
+/**
+ * Expand the date/time placeholders shared by templates and auto-filled note titles.
+ * Supports the same named placeholders and custom strftime formats as templates.
+ */
+function applyTemplateDateTimePlaceholders(format, date = new Date()) {
+    const pad2 = (n) => String(n).padStart(2, '0');
+    const pad4 = (n) => String(n).padStart(4, '0');
+    const replacements = {
+        '%Y': pad4(date.getFullYear()),
+        '%y': String(date.getFullYear()).slice(-2).padStart(2, '0'),
+        '%m': pad2(date.getMonth() + 1),
+        '%d': pad2(date.getDate()),
+        '%H': pad2(date.getHours()),
+        '%M': pad2(date.getMinutes()),
+        '%S': pad2(date.getSeconds()),
+    };
+    const strftime = (value) => value.replace(/%[YymdHMS]/g, (token) => replacements[token] ?? token);
+    const named = {
+        date: `${replacements['%Y']}-${replacements['%m']}-${replacements['%d']}`,
+        time: `${replacements['%H']}:${replacements['%M']}:${replacements['%S']}`,
+        datetime: `${replacements['%Y']}-${replacements['%m']}-${replacements['%d']} ${replacements['%H']}:${replacements['%M']}:${replacements['%S']}`,
+        year: replacements['%Y'],
+        month: replacements['%m'],
+        day: replacements['%d'],
+    };
+
+    const expanded = format
+        .replace(/\{\{(date|time|datetime):([^{}]+)\}\}/g, (_, name, customFormat) => strftime(customFormat))
+        .replace(/\{\{(date|time|datetime|year|month|day)\}\}/g, (_, name) => named[name]);
+    return expanded;
+}
+
 // localStorage settings configuration - centralized definition of all persisted settings
 const LOCAL_SETTINGS = {
     // Boolean settings
@@ -60,7 +93,7 @@ const LOCAL_SETTINGS = {
     tabInsertsTab: { key: 'tabInsertsTab', type: 'boolean', default: false },
     sidebarPanelCollapsed: { key: 'sidebarPanelCollapsed', type: 'boolean', default: false },
     autoFillNoteTitle: { key: 'autoFillNoteTitle', type: 'boolean', default: false },
-    autoTitleFormat: { key: 'autoTitleFormat', type: 'string', default: '%Y%m%d%H%M%S' },
+    autoTitleFormat: { key: 'autoTitleFormat', type: 'string', default: '{{datetime:%Y%m%d%H%M%S}}' },
     // Landmark-anchored editor/preview scroll sync. Off by default: percentage sync
     // is cheaper and adequate for plain prose, while anchoring earns its cost on
     // notes with images, tables or code blocks.
@@ -458,7 +491,7 @@ function noteApp() {
         newTemplateNoteName: '',
         newButtonAction: 'chooser',
         autoFillNoteTitle: false,
-        autoTitleFormat: '%Y%m%d%H%M%S',
+        autoTitleFormat: '{{datetime:%Y%m%d%H%M%S}}',
         smartScrollSync: false,
         lastUsedTemplate: '',
         
@@ -5131,22 +5164,8 @@ function noteApp() {
         },
         
         // Zettelkasten-style yyyymmddHHMMSS in local time.
-        _autoTitleTimestamp(format = this.autoTitleFormat || '%Y%m%d%H%M%S') {
-            const d = new Date();
-            const pad2 = (n) => String(n).padStart(2, '0');
-            const pad4 = (n) => String(n).padStart(4, '0');
-
-            const replacements = {
-                '%Y': pad4(d.getFullYear()),
-                '%y': String(d.getFullYear()).slice(-2).padStart(2, '0'),
-                '%m': pad2(d.getMonth() + 1),
-                '%d': pad2(d.getDate()),
-                '%H': pad2(d.getHours()),
-                '%M': pad2(d.getMinutes()),
-                '%S': pad2(d.getSeconds()),
-            };
-
-            return format.replace(/%[YymdHMS]/g, (token) => replacements[token] ?? token);
+        _autoTitleTimestamp(format = this.autoTitleFormat || '{{datetime:%Y%m%d%H%M%S}}') {
+            return applyTemplateDateTimePlaceholders(format);
         },
         
         closeCreateNameModal() {

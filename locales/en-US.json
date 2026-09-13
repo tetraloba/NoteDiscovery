@@ -291,9 +291,9 @@
     "new_button_option_template": "New note from template",
     "new_button_option_drawing": "New drawing",
     "auto_fill_note_title": "Auto-fill title with timestamp",
-    "auto_fill_note_title_desc": "Uses the current time when enabled. Example: %Y%m%d-%H%M%S_. Enter to accept, type to replace.",
-    "auto_title_format": "Timestamp format",
-    "auto_title_format_desc": "Use strftime-style tokens like %Y, %m, %d, %H, %M, %S. Example: %Y%m%d-%H%M%S_",
+    "auto_fill_note_title_desc": "Uses the current time when enabled. Use template placeholders such as {{year}}{{month}}{{day}} or {{datetime:%Y-%m-%dT%H:%M:%S}}. Enter to accept, type to replace.",
+    "auto_title_format": "Timestamp format for Auto-fill title",
+    "auto_title_format_desc": "Use template placeholders such as {{year}}{{month}}{{day}} or {{datetime:%Y%m%d-%H%M%S}}.",
     "smart_scroll_sync": "Smart scroll sync",
     "smart_scroll_sync_desc": "Aligns headings, images and tables between panes. Off uses percentage scrolling."
   },

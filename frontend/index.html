@@ -2373,7 +2373,7 @@
                                         @change="localStorage.setItem('autoTitleFormat', autoTitleFormat)"
                                         class="w-full px-3 py-2 rounded border text-sm"
                                         style="background-color: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-primary);"
-                                        placeholder="%Y%m%d-%H%M%S_"
+                                        placeholder="{{datetime:%Y%m%d-%H%M%S}}"
                                     >
                                     <p class="text-xs mt-1" style="color: var(--text-tertiary);" x-text="t('settings.auto_title_format_desc')"></p>
                                 </div>
@@ -3696,7 +3696,8 @@
                 <code style="font-family: monospace;">{{month}}</code>, 
                 <code style="font-family: monospace;">{{day}}</code>, 
                 <code style="font-family: monospace;">{{title}}</code>, 
-                <code style="font-family: monospace;">{{folder}}</code>
+                <code style="font-family: monospace;">{{folder}}</code>,
+                <code style="font-family: monospace;">{{datetime:%Y-%m-%dT%H:%M:%S}}</code>
             </div>
             
             <!-- Empty state when no templates available -->
