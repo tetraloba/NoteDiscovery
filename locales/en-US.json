@@ -291,7 +291,7 @@
     "new_button_option_template": "New note from template",
     "new_button_option_drawing": "New drawing",
     "auto_fill_note_title": "Auto-fill title with timestamp",
-    "auto_fill_note_title_desc": "Uses the current time when enabled. Use the format specified below. Enter to accept, type to replace.",
+    "auto_fill_note_title_desc": "Uses the current time and the format specified below. Enter to accept, type to replace.",
     "auto_title_format": "Timestamp format for Auto-fill title",
     "auto_title_format_desc": "Use template placeholders such as {{year}}{{month}}{{day}} or {{datetime:%Y%m%d-%H%M%S}}.",
     "smart_scroll_sync": "Smart scroll sync",
