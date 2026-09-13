@@ -56,6 +56,8 @@ RUN find /install -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || tru
 # Stage 4: Final minimal image
 FROM python:3.11-slim
 
+RUN apt update && apt install vim git -y
+
 WORKDIR /app
 
 # Copy only installed packages (no pip cache, no build artifacts)
