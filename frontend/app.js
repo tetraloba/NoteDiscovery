@@ -49,6 +49,37 @@ const SLUG_TRANSLITERATIONS = {
 };
 const SLUG_TRANSLITERATION_RE = new RegExp(`[${Object.keys(SLUG_TRANSLITERATIONS).join('')}]`, 'gi');
 
+// localStorage settings configuration - centralized definition of all persisted settings
+const LOCAL_SETTINGS = {
+    // Boolean settings
+    syntaxHighlightEnabled: { key: 'syntaxHighlightEnabled', type: 'boolean', default: false },
+    readableLineLength: { key: 'readableLineLength', type: 'boolean', default: true },
+    favoritesExpanded: { key: 'favoritesExpanded', type: 'boolean', default: true },
+    tagsExpanded: { key: 'tagsExpanded', type: 'boolean', default: false },
+    hideUnderscoreFolders: { key: 'hideUnderscoreFolders', type: 'boolean', default: false },
+    tabInsertsTab: { key: 'tabInsertsTab', type: 'boolean', default: false },
+    sidebarPanelCollapsed: { key: 'sidebarPanelCollapsed', type: 'boolean', default: false },
+    autoFillNoteTitle: { key: 'autoFillNoteTitle', type: 'boolean', default: false },
+    autoTitleFormat: { key: 'autoTitleFormat', type: 'string', default: '{{datetime:%Y%m%d%H%M%S}}' },
+    // Landmark-anchored editor/preview scroll sync. Off by default: percentage sync
+    // is cheaper and adequate for plain prose, while anchoring earns its cost on
+    // notes with images, tables or code blocks.
+    smartScrollSync: { key: 'smartScrollSync', type: 'boolean', default: false },
+    // String settings
+    sortMode: { key: 'sortMode', type: 'string', default: 'a-z' },
+    newButtonAction: {
+        key: 'newButtonAction', type: 'string', default: 'chooser',
+        valid: ['chooser', 'note', 'folder', 'template', 'drawing']
+    },
+    lastUsedTemplate: { key: 'lastUsedTemplate', type: 'string', default: '' },
+    // Number settings with validation
+    sidebarWidth: { key: 'sidebarWidth', type: 'number', default: CONFIG.DEFAULT_SIDEBAR_WIDTH, min: 200, max: 600 },
+    editorWidth: { key: 'editorWidth', type: 'number', default: 50, min: 20, max: 80 },
+    // String settings with validation
+    viewMode: { key: 'viewMode', type: 'string', default: 'split', valid: ['edit', 'split', 'preview'] },
+    // JSON settings
+    favorites: { key: 'noteFavorites', type: 'json', default: [] },
+};
 
 /**
  * Expand the date/time placeholders shared by templates and auto-filled note titles.
@@ -81,38 +112,6 @@ function applyTemplateDateTimePlaceholders(format, date = new Date()) {
         .replace(/\{\{(date|time|datetime|year|month|day)\}\}/g, (_, name) => named[name]);
     return expanded;
 }
-
-// localStorage settings configuration - centralized definition of all persisted settings
-const LOCAL_SETTINGS = {
-    // Boolean settings
-    syntaxHighlightEnabled: { key: 'syntaxHighlightEnabled', type: 'boolean', default: false },
-    readableLineLength: { key: 'readableLineLength', type: 'boolean', default: true },
-    favoritesExpanded: { key: 'favoritesExpanded', type: 'boolean', default: true },
-    tagsExpanded: { key: 'tagsExpanded', type: 'boolean', default: false },
-    hideUnderscoreFolders: { key: 'hideUnderscoreFolders', type: 'boolean', default: false },
-    tabInsertsTab: { key: 'tabInsertsTab', type: 'boolean', default: false },
-    sidebarPanelCollapsed: { key: 'sidebarPanelCollapsed', type: 'boolean', default: false },
-    autoFillNoteTitle: { key: 'autoFillNoteTitle', type: 'boolean', default: false },
-    autoTitleFormat: { key: 'autoTitleFormat', type: 'string', default: '{{datetime:%Y%m%d%H%M%S}}' },
-    // Landmark-anchored editor/preview scroll sync. Off by default: percentage sync
-    // is cheaper and adequate for plain prose, while anchoring earns its cost on
-    // notes with images, tables or code blocks.
-    smartScrollSync: { key: 'smartScrollSync', type: 'boolean', default: false },
-    // String settings
-    sortMode: { key: 'sortMode', type: 'string', default: 'a-z' },
-    newButtonAction: {
-        key: 'newButtonAction', type: 'string', default: 'chooser',
-        valid: ['chooser', 'note', 'folder', 'template', 'drawing']
-    },
-    lastUsedTemplate: { key: 'lastUsedTemplate', type: 'string', default: '' },
-    // Number settings with validation
-    sidebarWidth: { key: 'sidebarWidth', type: 'number', default: CONFIG.DEFAULT_SIDEBAR_WIDTH, min: 200, max: 600 },
-    editorWidth: { key: 'editorWidth', type: 'number', default: 50, min: 20, max: 80 },
-    // String settings with validation
-    viewMode: { key: 'viewMode', type: 'string', default: 'split', valid: ['edit', 'split', 'preview'] },
-    // JSON settings
-    favorites: { key: 'noteFavorites', type: 'json', default: [] },
-};
 
 // Centralized error handling
 const ErrorHandler = {
