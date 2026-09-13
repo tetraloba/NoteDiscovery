@@ -48,7 +48,11 @@ class Plugin:
         """Swap the module logger for the per-plugin one the host provides."""
         global logger
         logger = ctx.logger
-    def _format_note():
+    def _git_pull(self):
+        pass
+    def _git_commit_and_push(self, note_path: str):
+        pass
+    def _format_note(self, note_path: str, content: str):
         pass
     def on_note_create(self, note_path: str, initial_content: str) -> str | None:
         md = markdown.Markdown(extensions=['meta'])
@@ -76,3 +80,17 @@ class Plugin:
             body = '\n'
         # dump
         return f"---\n{header}---\n" + body
+    def on_note_save(self, note_path: str, content: str) -> str | None:
+        self._git_pull()
+        #TODO update 'updated' and 'tags'
+        self._git_commit_and_push(note_path)
+    def on_note_load(self, note_path: str, content: str) -> str | None:
+        # We can update 'accessed', but don't.
+        self._git_pull() # ?
+    def on_note_delete(self, note_path: str):
+        self._git_pull()
+        self._git_commit_and_push(note_path)
+    def on_app_startup(self):
+        logger.debug(f"{datetime.now().isoformat()}: on_app_startup(): called!")
+        # Git repository check and init?
+        self._git_pull()
